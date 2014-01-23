@@ -29,7 +29,7 @@ class Driver
      */
     public void createWattsStrogatzModel(int num, int avgDeg, double prob)
     {
-        // TODO
+        graph = new WattsStrogatzModel(num, avgDeg, prob);
     }
 
     /**

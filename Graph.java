@@ -2,6 +2,7 @@ import java.lang.RuntimeException;
 import java.lang.StringBuilder;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 /**
  * @author Joshua A. Campbell
@@ -11,7 +12,7 @@ import java.util.List;
 class Graph
 {
     protected int numNodes;
-    private List<Node> nodes;
+    protected List<Node> nodes;
 
     /**
      * Constructs a graph with the given number of nodes.
@@ -45,6 +46,23 @@ class Graph
     }
 
     /**
+     * Removes the undirected edge between the two nodes with the given
+     * identifier.
+     */
+    public void removeUndirectedEdge(int node1, int node2)
+    {
+        // Do some bounds checking.
+        if (node1 < 1 || node1 > this.numNodes)
+            throw new RuntimeException();
+        if (node2 < 1 || node2 > this.numNodes)
+            throw new RuntimeException();
+
+        // Disconnect the nodes.
+        nodes.get(node1).removeEdgeTo(node2);
+        nodes.get(node2).removeEdgeTo(node1);
+    }
+
+    /**
      * Returns the edges in the graph, sorted from low identifiers to high
      * identifiers.
      */
@@ -59,7 +77,7 @@ class Graph
         for (Node node : nodes)
         {
             Integer identifier = node.getIdentifier();
-            List<Integer> neighbors = node.getNeighbors();
+            Set<Integer> neighbors = node.getNeighbors();
             for (Integer neighbor : neighbors)
                 if (identifier.compareTo(neighbor) < 0)
                 {
