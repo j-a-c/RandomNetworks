@@ -1,5 +1,5 @@
-import java.util.ArrayList;
-import java.util.List;
+import java.util.LinkedHashSet;
+import java.util.Set;
 
 /**
  * @author Joshua A. Campbell
@@ -10,7 +10,7 @@ class Node
 {
     private int identifier;
     // Holds the Identifiers of this nodes neighbors.
-    private List<Integer> neighbors;
+    private Set<Integer> neighbors;
 
     /**
      * Constructes a node with the given identifier.
@@ -19,7 +19,7 @@ class Node
     public Node(int identifier)
     {
         this.identifier = identifier;
-        neighbors = new ArrayList<Integer>();
+        neighbors = new LinkedHashSet<Integer>();
     }
 
     /**
@@ -33,6 +33,15 @@ class Node
     }
 
     /**
+     * Removes the given identifier from the list of neighbors.
+     * There is some auto-boxing that goes on here..
+     */
+    public void removeEdgeTo(Integer neighbor)
+    {
+        neighbors.remove(neighbor);
+    }
+
+    /**
      * Returns the identifier wrapped in an Integer.
      */
     public Integer getIdentifier()
@@ -43,7 +52,7 @@ class Node
     /**
      * Returns the list of neighbors.
      */
-    public List<Integer> getNeighbors()
+    public Set<Integer> getNeighbors()
     {
         return neighbors;
     }
