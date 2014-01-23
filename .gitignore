@@ -1,10 +1,10 @@
-# References
-*.pdf
-
-# Class files
+# Class Files
 *.class
 
 # Package Files #
 *.jar
 *.war
 *.ear
+
+# Resources
+*.pdf
