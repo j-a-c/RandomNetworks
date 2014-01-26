@@ -103,7 +103,7 @@ class Driver
         writeToFile(clusterDist, clusterOutput);
 
         // Closeness centrality distribution.
-        Map<Integer, Double> closenessDist = graph.getClosenessCentralityDistribution();
+        Map<Double, Double> closenessDist = graph.getClosenessCentralityDistribution();
         writeToFile(closenessDist, closenessOutput);
     }
 

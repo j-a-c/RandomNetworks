@@ -184,12 +184,72 @@ class Graph
 
     /**
      * Returns the distribution of the closeness centralities.
+     * Because some of these networks might be disconnected, the following
+     * formula is used to calculate the closeness centrality:
+     *  f_close(u) = sum( 1 / dist(u,v) ) for all v in V-{u}.
+     *  The bigger the closeness centrality, the relatively important this node
+     *  is.
      */
-    public Map<Integer, Double> getClosenessCentralityDistribution()
+    public Map<Double, Double> getClosenessCentralityDistribution()
     {
-        Map<Integer, Double> distribution = new TreeMap<Integer, Double>();
+        Map<Double, Double> distribution = new TreeMap<Double, Double>();
 
-        // TODO
+        // Run the Floyd-Warshall algorithm to find the lengths of the shortest
+        // paths between all pairs of vertices.
+
+        // The distances vector. We will ignore the [*][0] and [0][*] elements
+        // since our ordering is from [1, numNodes].
+        int[][] distances = new int[this.numNodes+1][this.numNodes+1];
+        // Intitialize the distance vector.
+        for (int i = 1; i <= this.numNodes; i++)
+            for (int j = 1; j <= this.numNodes; j++)
+            {
+                if (i == j)
+                    distances[i][j] = 0;
+                else if (this.nodes.get(i).getNeighbors().contains(j))
+                    distances[i][j] = 1;
+                else
+                    distances[i][j] = Integer.MAX_VALUE;
+            }
+
+        // Calculate the distances.
+        for (int k = 1; k <= this.numNodes; k++)
+            for (int i = 1; i <= this.numNodes; i++)
+                for (int j = 1; j <= this.numNodes; j++)
+                    if (distances[i][k] != Integer.MAX_VALUE && distances[k][j] != Integer.MAX_VALUE)
+                        if (distances[i][j] > distances[i][k] + distances[k][j])
+                            distances[i][j] = distances[i][k] + distances[k][j];
+
+        // Populate the distribution map.
+        for (int i = 1; i <= this.numNodes; i++)
+        {
+            // Closeness centrality for this node.
+            double centrality = 0.0;
+
+            for (int j = 1; j <= this.numNodes; j++)
+            {
+                // Ignore the current node.
+                if (i != j)
+                    centrality += (1.0 / distances[i][j]);
+            }
+
+            // Update the frequency.
+            Double partialFreq =  distribution.get(centrality);
+            if (partialFreq == null)
+                distribution.put(centrality, 1.0);
+            else
+                distribution.put(centrality, 1.0 + partialFreq);
+        }
+
+        // Scale the distribution.
+        // Get the actual frequency by dividing by the number of nodes at the
+        // end.
+        Iterator<Map.Entry<Double, Double>> it = distribution.entrySet().iterator();
+        while (it.hasNext()) 
+        {
+            Map.Entry<Double, Double> pair = it.next();
+            distribution.put(pair.getKey(), pair.getValue() / this.numNodes);
+        }
 
         return distribution;
     }
