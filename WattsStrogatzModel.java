@@ -64,7 +64,10 @@ class WattsStrogatzModel extends Graph
                     if (Math.random() < this.rewiringProbability)
                     {
                         // Possible new neighbors.
-                        Set<Node> possible = new LinkedHashSet<Node>(this.nodes);
+                        Set<Integer> possible = new LinkedHashSet<Integer>();
+                        for(Node allNode : this.nodes)
+                           possible.add(allNode.getIdentifier());
+                        possible.remove(new Integer(0));
                         // Don't select neighbors. 
                         // Get the current copy of the neighbors.
                         possible.removeAll(node.getNeighbors());
@@ -78,12 +81,11 @@ class WattsStrogatzModel extends Graph
                         Integer newNeighborIdentifier = null;
                         // Select the new neighbor.
                         int currIndex = 0;
-                        for (Node newNeighbor : possible)
+                        for (Integer newNeighbor : possible)
                         {
                             if (currIndex == newNeighborIndex)
                             {
-                                newNeighborIdentifier = 
-                                    newNeighbor.getIdentifier();
+                                newNeighborIdentifier = newNeighbor;
                                 break;
                             }
                             currIndex++;

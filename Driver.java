@@ -40,7 +40,8 @@ class Driver
      */
     public void createScaleFreeModel(int num, double disparity)
     {
-        // TODO 
+
+        graph = new ScaleFreeModel(num, (int) disparity);
     }
 
     /**

@@ -36,9 +36,15 @@ class Graph
     {
         // Do some bounds checking.
         if (node1 < 1 || node1 > this.numNodes)
+        {
+            System.out.println("node1 " + node1);
             throw new RuntimeException();
+        }
         if (node2 < 1 || node2 > this.numNodes)
+        {
+            System.out.println("node2 " + node2);
             throw new RuntimeException();
+        }
 
         // Connect the nodes.
         nodes.get(node1).addEdgeTo(node2);
@@ -53,9 +59,15 @@ class Graph
     {
         // Do some bounds checking.
         if (node1 < 1 || node1 > this.numNodes)
+        {
+            System.out.println("node1 " + node1);
             throw new RuntimeException();
+        }
         if (node2 < 1 || node2 > this.numNodes)
+        {
+            System.out.println("node2 " + node2);
             throw new RuntimeException();
+        }
 
         // Disconnect the nodes.
         nodes.get(node1).removeEdgeTo(node2);
