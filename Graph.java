@@ -1,6 +1,7 @@
 import java.lang.RuntimeException;
 import java.lang.StringBuilder;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -106,11 +107,93 @@ class Graph
         while (it.hasNext()) 
         {
             Map.Entry<Integer, Double> pair = it.next();
-            distribution.put (pair.getKey(), pair.getValue() / this.numNodes);
+            distribution.put(pair.getKey(), pair.getValue() / this.numNodes);
         }
 
         return distribution;
     }
+
+    /**
+     * Returns the distribution of the clustering coefficients.
+     */
+    public Map<Double, Double> getClusteringCoefficientDistribution()
+    {
+        Map<Double, Double> distribution = new TreeMap<Double, Double>();
+
+        // For each node...
+        for (int i = 1; i <= this.numNodes; i++)
+        {
+            Node node = this.nodes.get(i);
+
+            Set<Integer> neighbors = node.getNeighbors();
+            int numNeighs = neighbors.size();
+
+            double numerator = 0.0;
+            double denominator = 0.0;
+            
+            // The denominator = (numNeighs choose 2).
+            denominator = numNeighs * (numNeighs-1);
+            denominator /= 2;
+
+            // Calculate the numerator.
+            for (Integer neighbor : neighbors)
+            {
+                // Get the neighbors of the neighbor.
+                // We need to find neighbors of the neighbor that are also
+                // neighbors of the original node (node) we are calculationing
+                // the clustering coefficient for.
+                Set<Integer> neighsNeighs = this.nodes.get(neighbor).getNeighbors();
+
+                // Check all the neighbor's neighbors.
+                for (Integer neighsNeigh : neighsNeighs)
+                {
+                    // We don't want to count edges twice, so we enforce an
+                    // ordering.
+                    if (neighbor < neighsNeigh)
+                    {
+                        // If this edge actually exists, we increment the
+                        // numerator because we have found an edge between two
+                        // neighbors of the original node we are considering.
+                        if (neighbors.contains(neighsNeigh))
+                            numerator += 1.0;
+                    }
+                }
+            }
+
+            // Calculate the clustering coefficient.
+            double coef = numerator / denominator;
+            // Update the frequency.
+            Double partialFreq =  distribution.get(coef);
+            if (partialFreq == null)
+                distribution.put(coef, 1.0);
+            else
+                distribution.put(coef, 1.0 + partialFreq);
+        }
+
+        // Get the actual frequency by dividing by the number of nodes at the
+        // end.
+        Iterator<Map.Entry<Double,Double>> it = distribution.entrySet().iterator();
+        while (it.hasNext()) 
+        {
+            Map.Entry<Double, Double> pair = it.next();
+            distribution.put(pair.getKey(), pair.getValue() / this.numNodes);
+        }
+
+        return distribution;
+    }
+
+    /**
+     * Returns the distribution of the closeness centralities.
+     */
+    public Map<Integer, Double> getClosenessCentralityDistribution()
+    {
+        Map<Integer, Double> distribution = new TreeMap<Integer, Double>();
+
+        // TODO
+
+        return distribution;
+    }
+
 
     /**
      * Returns the edges in the graph, sorted from low identifiers to high

@@ -61,8 +61,13 @@ class Driver
         System.out.println(graph);
     }
 
-
-    private void writeToFile(Map<Integer, Double> data, String location)
+    /**
+     * Writes the contents of the given map to the file at the give location.
+     *
+     * @param data The data to be output.
+     * @param location The location to write the data to.
+     */
+    private void writeToFile(Map<?, ?> data, String location)
     {
         PrintWriter writer = null;
 
@@ -77,7 +82,7 @@ class Driver
             return;
         }
 
-        for (Map.Entry<Integer, Double> entry : data.entrySet()) 
+        for (Map.Entry<?, ?> entry : data.entrySet()) 
         {
             writer.println(entry.getKey() + " " + entry.getValue());
         }
@@ -94,8 +99,12 @@ class Driver
         writeToFile(degreeDist, degreeOutput);
 
         // Clustering coefficient distribution.
+        Map<Double, Double> clusterDist = graph.getClusteringCoefficientDistribution();
+        writeToFile(clusterDist, clusterOutput);
 
         // Closeness centrality distribution.
+        Map<Integer, Double> closenessDist = graph.getClosenessCentralityDistribution();
+        writeToFile(closenessDist, closenessOutput);
     }
 
     public static void main(String[] args)
