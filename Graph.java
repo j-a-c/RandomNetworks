@@ -1,8 +1,11 @@
 import java.lang.RuntimeException;
 import java.lang.StringBuilder;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
+import java.util.TreeMap;
 
 /**
  * @author Joshua A. Campbell
@@ -72,6 +75,41 @@ class Graph
         // Disconnect the nodes.
         nodes.get(node1).removeEdgeTo(node2);
         nodes.get(node2).removeEdgeTo(node1);
+    }
+    
+    /**
+     * Returns the degree distribution of the graph.
+     * The map maps values to frequency.
+     */
+    public Map<Integer, Double> getDegreeDistribution()
+    {
+        Map<Integer, Double> distribution = new TreeMap<Integer, Double>();
+
+        // Tally the number of degrees for each node.
+        for (int i = 1; i <= this.numNodes; i++)
+        {
+            Node node = this.nodes.get(i);
+
+            int degree = node.getNeighbors().size();
+
+            Double partialFreq =  distribution.get(degree);
+
+            if (partialFreq == null)
+                distribution.put(degree, 1.0);
+            else
+                distribution.put(degree, 1.0 + partialFreq);
+        }
+
+        // Get the actual frequency by dividing by the number of nodes at the
+        // end.
+        Iterator<Map.Entry<Integer,Double>> it = distribution.entrySet().iterator();
+        while (it.hasNext()) 
+        {
+            Map.Entry<Integer, Double> pair = it.next();
+            distribution.put (pair.getKey(), pair.getValue() / this.numNodes);
+        }
+
+        return distribution;
     }
 
     /**

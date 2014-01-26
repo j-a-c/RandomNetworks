@@ -1,3 +1,6 @@
+import java.io.PrintWriter;
+import java.util.Map;
+
 /**
  * @author Joshua A. Campbell
  *
@@ -5,7 +8,13 @@
  */
 class Driver
 {
+    // Our graph.
     private Graph graph;
+
+    // Output locations.
+    private static final String degreeOutput = "degree.txt";
+    private static final String clusterOutput = "clustering.txt";
+    private static final String closenessOutput = "closeness.txt";
 
     public Driver(){}
 
@@ -52,10 +61,41 @@ class Driver
         System.out.println(graph);
     }
 
-    // TODO
+
+    private void writeToFile(Map<Integer, Double> data, String location)
+    {
+        PrintWriter writer = null;
+
+        try
+        {
+            writer = new PrintWriter(location, "UTF-8");
+        }
+        catch (Exception e)
+        {
+            System.out.println("Unable to write to file:");
+            System.out.println(e);
+            return;
+        }
+
+        for (Map.Entry<Integer, Double> entry : data.entrySet()) 
+        {
+            writer.println(entry.getKey() + " " + entry.getValue());
+        }
+        writer.close();
+    }
+
+    /**
+     * Save the various statistics offered by the Graph implementations.
+     */
     public void saveStats()
     {
-    
+        // Degree distribution.
+        Map<Integer, Double> degreeDist = graph.getDegreeDistribution();
+        writeToFile(degreeDist, degreeOutput);
+
+        // Clustering coefficient distribution.
+
+        // Closeness centrality distribution.
     }
 
     public static void main(String[] args)

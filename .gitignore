@@ -8,3 +8,6 @@
 
 # Resources
 *.pdf
+
+# Output
+*.txt
