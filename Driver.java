@@ -99,11 +99,11 @@ class Driver
         writeToFile(degreeDist, degreeOutput);
 
         // Clustering coefficient distribution.
-        Map<Double, Double> clusterDist = graph.getClusteringCoefficientDistribution();
+        Map<String, Double> clusterDist = graph.getClusteringCoefficientDistribution();
         writeToFile(clusterDist, clusterOutput);
 
         // Closeness centrality distribution.
-        Map<Double, Double> closenessDist = graph.getClosenessCentralityDistribution();
+        Map<String, Double> closenessDist = graph.getClosenessCentralityDistribution();
         writeToFile(closenessDist, closenessOutput);
     }
 

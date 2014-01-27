@@ -116,9 +116,9 @@ class Graph
     /**
      * Returns the distribution of the clustering coefficients.
      */
-    public Map<Double, Double> getClusteringCoefficientDistribution()
+    public Map<String, Double> getClusteringCoefficientDistribution()
     {
-        Map<Double, Double> distribution = new TreeMap<Double, Double>();
+        Map<String, Double> distribution = new TreeMap<String, Double>();
 
         // For each node...
         for (int i = 1; i <= this.numNodes; i++)
@@ -163,19 +163,21 @@ class Graph
             // Calculate the clustering coefficient.
             double coef = numerator / denominator;
             // Update the frequency.
-            Double partialFreq =  distribution.get(coef);
+            // Round to ten decimal places.
+            String result = String.format("%.10f", coef);
+            Double partialFreq =  distribution.get(result);
             if (partialFreq == null)
-                distribution.put(coef, 1.0);
+                distribution.put(result, 1.0);
             else
-                distribution.put(coef, 1.0 + partialFreq);
+                distribution.put(result, 1.0 + partialFreq);
         }
 
         // Get the actual frequency by dividing by the number of nodes at the
         // end.
-        Iterator<Map.Entry<Double,Double>> it = distribution.entrySet().iterator();
+        Iterator<Map.Entry<String,Double>> it = distribution.entrySet().iterator();
         while (it.hasNext()) 
         {
-            Map.Entry<Double, Double> pair = it.next();
+            Map.Entry<String, Double> pair = it.next();
             distribution.put(pair.getKey(), pair.getValue() / this.numNodes);
         }
 
@@ -190,9 +192,9 @@ class Graph
      *  The bigger the closeness centrality, the relatively important this node
      *  is.
      */
-    public Map<Double, Double> getClosenessCentralityDistribution()
+    public Map<String, Double> getClosenessCentralityDistribution()
     {
-        Map<Double, Double> distribution = new TreeMap<Double, Double>();
+        Map<String, Double> distribution = new TreeMap<String, Double>();
 
         // Run the Floyd-Warshall algorithm to find the lengths of the shortest
         // paths between all pairs of vertices.
@@ -234,20 +236,22 @@ class Graph
             }
 
             // Update the frequency.
-            Double partialFreq =  distribution.get(centrality);
+            // Round to ten decimal places.
+            String result = String.format("%.10f", centrality);
+            Double partialFreq =  distribution.get(result);
             if (partialFreq == null)
-                distribution.put(centrality, 1.0);
+                distribution.put(result, 1.0);
             else
-                distribution.put(centrality, 1.0 + partialFreq);
+                distribution.put(result, 1.0 + partialFreq);
         }
 
         // Scale the distribution.
         // Get the actual frequency by dividing by the number of nodes at the
         // end.
-        Iterator<Map.Entry<Double, Double>> it = distribution.entrySet().iterator();
+        Iterator<Map.Entry<String, Double>> it = distribution.entrySet().iterator();
         while (it.hasNext()) 
         {
-            Map.Entry<Double, Double> pair = it.next();
+            Map.Entry<String, Double> pair = it.next();
             distribution.put(pair.getKey(), pair.getValue() / this.numNodes);
         }
 
