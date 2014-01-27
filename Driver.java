@@ -1,3 +1,6 @@
+import java.io.PrintWriter;
+import java.util.Map;
+
 /**
  * @author Joshua A. Campbell
  *
@@ -5,7 +8,13 @@
  */
 class Driver
 {
+    // Our graph.
     private Graph graph;
+
+    // Output locations.
+    private static final String degreeOutput = "degree.txt";
+    private static final String clusterOutput = "clustering.txt";
+    private static final String closenessOutput = "closeness.txt";
 
     public Driver(){}
 
@@ -52,10 +61,50 @@ class Driver
         System.out.println(graph);
     }
 
-    // TODO
+    /**
+     * Writes the contents of the given map to the file at the give location.
+     *
+     * @param data The data to be output.
+     * @param location The location to write the data to.
+     */
+    private void writeToFile(Map<?, ?> data, String location)
+    {
+        PrintWriter writer = null;
+
+        try
+        {
+            writer = new PrintWriter(location, "UTF-8");
+        }
+        catch (Exception e)
+        {
+            System.out.println("Unable to write to file:");
+            System.out.println(e);
+            return;
+        }
+
+        for (Map.Entry<?, ?> entry : data.entrySet()) 
+        {
+            writer.println(entry.getKey() + " " + entry.getValue());
+        }
+        writer.close();
+    }
+
+    /**
+     * Save the various statistics offered by the Graph implementations.
+     */
     public void saveStats()
     {
-    
+        // Degree distribution.
+        Map<Integer, Double> degreeDist = graph.getDegreeDistribution();
+        writeToFile(degreeDist, degreeOutput);
+
+        // Clustering coefficient distribution.
+        Map<String, Double> clusterDist = graph.getClusteringCoefficientDistribution();
+        writeToFile(clusterDist, clusterOutput);
+
+        // Closeness centrality distribution.
+        Map<String, Double> closenessDist = graph.getClosenessCentralityDistribution();
+        writeToFile(closenessDist, closenessOutput);
     }
 
     public static void main(String[] args)
