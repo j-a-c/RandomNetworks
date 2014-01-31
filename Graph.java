@@ -1,10 +1,13 @@
 import java.lang.RuntimeException;
 import java.lang.StringBuilder;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.PriorityQueue;
 import java.util.Set;
 import java.util.TreeMap;
 
@@ -185,6 +188,40 @@ class Graph
     }
 
     /**
+     * Used for the Dijkstra's algorithm implementation.
+     */
+    private class Pair
+    {
+        // Node identifier.
+        int val1;
+        // Node distance.
+        int val2;
+
+        public Pair(int val1, int val2)
+        {
+            this.val1 = val1;
+            this.val2 = val2;
+        }
+    }
+
+    /**
+     * Comparator for the PriorityQueue used in Dijkstra's algorithm.
+     */
+    public class PairComparator implements Comparator<Pair>
+    {
+        @Override
+        public int compare(Pair x, Pair y)
+        {
+            if (x.val2 < y.val2)
+                return -1;
+            else if (x.val2 > y.val2)
+                return 1;
+            else 
+                return 0;
+        }
+    }
+
+    /**
      * Returns the distribution of the closeness centralities.
      * Because some of these networks might be disconnected, the following
      * formula is used to calculate the closeness centrality:
@@ -196,43 +233,63 @@ class Graph
     {
         Map<String, Double> distribution = new TreeMap<String, Double>();
 
-        // Run the Floyd-Warshall algorithm to find the lengths of the shortest
-        // paths between all pairs of vertices.
+        // Run Dijkstra's algorithm this.numNodes times to find the lengths of 
+        // the shortest paths between all pairs of vertices.
+        
+        // Distance vector
+        int[] distances = new int[this.numNodes + 1];
+      
+        // Populate the distribution map.
+        for (int currNode = 1; currNode <= this.numNodes; currNode++)
+        {
+            // PriorityQueue to sort the distances.
+            PriorityQueue<Pair> pQueue = 
+                new PriorityQueue<Pair>(this.numNodes, new PairComparator());
 
-        // The distances vector. We will ignore the [*][0] and [0][*] elements
-        // since our ordering is from [1, numNodes].
-        int[][] distances = new int[this.numNodes+1][this.numNodes+1];
-        // Intitialize the distance vector.
-        for (int i = 1; i <= this.numNodes; i++)
-            for (int j = 1; j <= this.numNodes; j++)
+            // Distance vector initialization.
+            distances[currNode] = 0;
+            for (int otherNode = 1; otherNode <= this.numNodes; otherNode++)
             {
-                if (i == j)
-                    distances[i][j] = 0;
-                else if (this.nodes.get(i).getNeighbors().contains(j))
-                    distances[i][j] = 1;
-                else
-                    distances[i][j] = Integer.MAX_VALUE;
+                if (otherNode != currNode)
+                {
+                    distances[otherNode] = Integer.MAX_VALUE;
+                }
+                pQueue.add(new Pair(otherNode, distances[otherNode]));
             }
 
-        // Calculate the distances.
-        for (int k = 1; k <= this.numNodes; k++)
-            for (int i = 1; i <= this.numNodes; i++)
-                for (int j = 1; j <= this.numNodes; j++)
-                    if (distances[i][k] != Integer.MAX_VALUE && distances[k][j] != Integer.MAX_VALUE)
-                        if (distances[i][j] > distances[i][k] + distances[k][j])
-                            distances[i][j] = distances[i][k] + distances[k][j];
+            Set<Integer> visitedNodes = new HashSet<Integer>();
 
-        // Populate the distribution map.
-        for (int i = 1; i <= this.numNodes; i++)
-        {
+            while (!pQueue.isEmpty())
+            {
+                // The current closest node we are considering.
+                Pair pair = pQueue.poll();
+                Set<Integer> neighbors = this.nodes.get(pair.val1).getNeighbors();
+                for (Integer neighbor : neighbors)
+                {
+                    if (visitedNodes.contains(neighbor))
+                        continue;
+
+                    // The potential new closest distance.
+                    int alt = distances[pair.val1] + 1;
+                    if (alt < distances[neighbor])
+                    {
+                        pQueue.remove(new Pair(neighbor, distances[neighbor]));
+                        distances[neighbor] = alt;
+                        pQueue.add(new Pair(neighbor, distances[neighbor]));
+                    }
+                }
+
+                visitedNodes.add(pair.val1);
+            }
+
             // Closeness centrality for this node.
             double centrality = 0.0;
 
-            for (int j = 1; j <= this.numNodes; j++)
+            for (int otherNode = 1; otherNode <= this.numNodes; otherNode++)
             {
                 // Ignore the current node.
-                if (i != j)
-                    centrality += (1.0 / distances[i][j]);
+                if (currNode != otherNode)
+                    centrality += (1.0 / distances[otherNode]);
             }
 
             // Update the frequency.
